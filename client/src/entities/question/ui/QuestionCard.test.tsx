@@ -1,6 +1,5 @@
-// client/src/entities/question/ui/QuestionCard.test.tsx
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event'; // Импортируем user-event
+import userEvent from '@testing-library/user-event';
 import { describe, it, expect } from 'vitest';
 import { QuestionCard } from './QuestionCard';
 import { mockQuestion } from '../model/mock';
@@ -19,7 +18,6 @@ describe('QuestionCard', () => {
     });
   });
 
-  // Новый тест на поведение: клик по ПРАВИЛЬНОМУ ответу
   it('should highlight the correct answer in green when clicked', async () => {
     const user = userEvent.setup(); // Настраиваем user-event
     render(<QuestionCard question={mockQuestion} />);
