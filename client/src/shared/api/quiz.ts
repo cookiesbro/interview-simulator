@@ -1,8 +1,6 @@
 // Импортируем наш тип вопроса, чтобы TypeScript понимал, что мы ожидаем от сервера
 import type { IQuestion } from '../../entities/question/model/types';
-
-// Определяем базовый URL нашего бэкенда
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+import { API_BASE_URL } from '@/shared/config';
 
 // Описываем тип ответа от эндпоинта /start
 interface StartQuizResponse {
@@ -12,45 +10,30 @@ interface StartQuizResponse {
 
 // Описываем тип ответа от эндпоинта /next
 interface NextQuestionResponse {
-    question: IQuestion | null; // Вопрос может быть null, если они закончились
-    message?: string;
+  question: IQuestion | null; // Вопрос может быть null, если они закончились
+  message?: string;
 }
-
-export const fetchRandomQuestion = async (): Promise<IQuestion> => {
-  try {
-    const response = await fetch(`${BASE_URL}/questions/random`);
-
-    // Проверка статуса ответа
-    if (!response.ok) {
-      // Если ответ не успешный (например, 404 или 500), выбрасываем ошибку
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to fetch question');
-    }
-
-    // Парсим JSON-ответ и возвращаем его
-    const data: IQuestion = await response.json();
-    return data;
-  } catch (error) {
-    // Логируем ошибку и перебрасываем ее дальше
-    console.error('Error fetching random question:', error);
-    throw error;
-  }
-};
 
 // Новая функция для старта квиза
 export const startQuiz = async (): Promise<StartQuizResponse> => {
-    const response = await fetch(`${BASE_URL}/quiz/start`, { method: 'POST' });
-    if (!response.ok) {
-        throw new Error('Failed to start quiz');
-    }
-    return response.json();
+  const response = await fetch(`${API_BASE_URL}/quiz/start`, {
+    method: 'POST',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to start quiz');
+  }
+  return response.json();
 };
 
 // Новая функция для получения следующего вопроса
-export const fetchNextQuestion = async (sessionId: string): Promise<NextQuestionResponse> => {
-    const response = await fetch(`${BASE_URL}/quiz/${sessionId}/next`, { method: 'POST' });
-    if (!response.ok) {
-        throw new Error('Failed to fetch next question');
-    }
-    return response.json();
+export const fetchNextQuestion = async (
+  sessionId: string,
+): Promise<NextQuestionResponse> => {
+  const response = await fetch(`${API_BASE_URL}/quiz/${sessionId}/next`, {
+    method: 'POST',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch next question');
+  }
+  return response.json();
 };

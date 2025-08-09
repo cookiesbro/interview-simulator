@@ -1,3 +1,4 @@
+import 'whatwg-fetch';
 import '@testing-library/jest-dom';
 import { beforeAll, afterEach, afterAll } from 'vitest';
 import { server } from './mocks/server'; // Импортируем наш мок-сервер из нового места
