@@ -23,7 +23,7 @@ describe('TrainingPage', () => {
     // waitFor нужен, чтобы дождаться асинхронного обновления состояния
     await waitFor(() => {
       expect(
-        screen.getByText((content, element) => {
+        screen.getByText((_content, element) => {
           return element!.textContent === mockQuestion1.questionText;
         }),
       ).toBeInTheDocument();
