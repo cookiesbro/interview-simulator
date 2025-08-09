@@ -1,17 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { IQuestion } from '../model/types';
 import styles from './QuestionCard.module.css';
 
 interface QuestionCardProps {
   question: IQuestion;
+  onAnswered: () => void; // Новый пропс: функция-колбэк
 }
 
-export const QuestionCard = ({ question }: QuestionCardProps) => {
+export const QuestionCard = ({ question, onAnswered }: QuestionCardProps) => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+
+  // Сбрасываем состояние при смене вопроса
+  useEffect(() => {
+    setSelectedAnswer(null);
+  }, [question.id]);
 
   const handleOptionClick = (option: string) => {
     if (selectedAnswer) return;
     setSelectedAnswer(option);
+    onAnswered(); // Вызываем колбэк, когда пользователь выбрал ответ
   };
 
   return (
