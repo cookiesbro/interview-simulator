@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { server } from '@/test/mocks/server';
 import { handlers } from '@/test/mocks/handlers'; // errorHandlers можно убрать, если не используем
-import { startQuiz, fetchNextQuestion } from './quiz'; // Импортируем ТОЛЬКО новые функции
+import { startQuiz, submitAnswer } from './quiz'; // Импортируем ТОЛЬКО новые функции
 import { mockQuestion1, mockQuestion2 } from '@/test/mocks/data';
 
 describe('quiz API', () => {
@@ -20,15 +20,18 @@ describe('quiz API', () => {
     expect(response.sessionId).toBe('mock-session-id');
     expect(response.question).toEqual(mockQuestion1);
   });
+});
 
-  it('should fetch the next question successfully', async () => {
-    // Arrange: устанавливаем обработчики для успешного ответа
-    server.use(...handlers);
+it('should submit an answer and get the next question', async () => {
+  server.use(...handlers); // Убедись, что в handlers есть мок для этого запроса
 
-    // Act: вызываем функцию получения следующего вопроса
-    const response = await fetchNextQuestion('mock-session-id');
-
-    // Assert: проверяем, что получили второй вопрос
-    expect(response.question).toEqual(mockQuestion2);
+  // Act
+  const response = await submitAnswer('mock-session-id', {
+    questionId: mockQuestion1.id,
+    answer: mockQuestion1.options[0],
   });
+
+  // Assert
+  expect(response.nextQuestion).toEqual(mockQuestion2);
+  expect(response.isCorrect).toBeDefined(); // Проверяем, что поле isCorrect существует
 });

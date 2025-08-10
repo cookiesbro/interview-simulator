@@ -1,91 +1,86 @@
 import { useEffect, useState } from 'react';
-import { QuestionCard } from '../../entities/question/ui/QuestionCard';
-import { startQuiz, fetchNextQuestion } from '../../shared/api/quiz'; // Импортируем новые функции
-import type { IQuestion } from '../../entities/question/model/types';
+import { QuestionCard } from '@/entities/question/ui/QuestionCard';
+import { startQuiz, submitAnswer } from '@/shared/api/quiz';
+import type { IQuestion } from '@/entities/question/model/types';
 
 export const TrainingPage = () => {
-  // Состояния для данных
   const [question, setQuestion] = useState<IQuestion | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-
-  // Состояния для UX
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [score, setScore] = useState(0);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
-  const [showNextButton, setShowNextButton] = useState(false);
 
-  // Запускаем сессию при первой загрузке страницы
+  const [answerResult, setAnswerResult] = useState<{
+    userAnswer: string;
+    correctAnswer: string;
+  } | null>(null);
+
   useEffect(() => {
     const initQuiz = async () => {
       try {
-        setIsLoading(true);
         const { sessionId, question } = await startQuiz();
         setSessionId(sessionId);
         setQuestion(question);
       } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setIsLoading(false);
+        // Можно добавить обработку ошибки инициализации, если нужно
+        console.error('Failed to initialize quiz:', err);
       }
     };
     initQuiz();
   }, []);
 
-  // Обработчик для кнопки "Следующий вопрос"
-  const handleNextQuestion = async () => {
-    if (!sessionId) return;
+  const handleAnswer = async (answer: string) => {
+    if (!sessionId || !question || answerResult) return; // Блокируем повторные нажатия, пока виден результат
 
     try {
-      setIsLoading(true); // Показываем загрузку для следующего вопроса
-      setShowNextButton(false); // Прячем кнопку
-      const { question: nextQuestion } = await fetchNextQuestion(sessionId);
+      const {
+        correctAnswer,
+        score: newScore,
+        nextQuestion,
+      } = await submitAnswer(sessionId, {
+        questionId: question.id,
+        answer,
+      });
 
-      if (nextQuestion) {
-        setQuestion(nextQuestion);
-      } else {
-        setIsQuizFinished(true); // Вопросы закончились
-        setQuestion(null);
-      }
+      setScore(newScore);
+      setAnswerResult({ userAnswer: answer, correctAnswer });
+
+      setTimeout(() => {
+        setAnswerResult(null);
+        if (nextQuestion) {
+          setQuestion(nextQuestion);
+        } else {
+          setIsQuizFinished(true);
+        }
+      }, 2000);
     } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setIsLoading(false);
+      console.error('Failed to submit answer:', err);
     }
   };
 
-  // Теперь карточка вопроса должна сообщать нам, когда на нее ответили
-  const handleAnswered = () => {
-    setShowNextButton(true);
-  };
-
-  // Рендеринг в зависимости от состояния
-  if (isLoading && !question) {
-    // Показываем начальную загрузку
+  if (!question && !isQuizFinished) {
     return <div>Загрузка сессии...</div>;
   }
 
-  if (error) {
-    return <div>Ошибка: {error}</div>;
-  }
-
   if (isQuizFinished) {
-    return <div>Поздравляем! Вы прошли все вопросы.</div>;
+    return (
+      <div>
+        <h1>Квиз завершен!</h1>
+        <h2>Ваш итоговый счет: {score}</h2>
+      </div>
+    );
   }
 
   return (
     <div>
-      <h1>Режим тренировки</h1>
-      {isLoading && <div>Загрузка следующего вопроса...</div>}
+      <h1>Режим тренировки | Счет: {score}</h1>
       {question && (
         <QuestionCard
           question={question}
-          onAnswered={handleAnswered} // Передаем колбэк
+          onAnswer={handleAnswer}
+          isAnswered={!!answerResult}
+          userAnswer={answerResult?.userAnswer}
+          correctAnswer={answerResult?.correctAnswer}
         />
-      )}
-      {showNextButton && (
-        <button onClick={handleNextQuestion} style={{ marginTop: '1rem' }}>
-          Следующий вопрос
-        </button>
       )}
     </div>
   );
