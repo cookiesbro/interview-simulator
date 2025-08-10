@@ -34,4 +34,12 @@ export const errorHandlers = [
   http.get(`${API_BASE_URL}/questions/random`, () => {
     return new HttpResponse(null, { status: 500 });
   }),
+  http.post(`${API_BASE_URL}/quiz/mock-session-id/answer`, () => {
+    return HttpResponse.json({
+      isCorrect: true,
+      correctAnswer: mockQuestion1.correctAnswer,
+      score: 1,
+      nextQuestion: mockQuestion2,
+    });
+  }),
 ];

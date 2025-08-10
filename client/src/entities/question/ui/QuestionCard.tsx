@@ -1,58 +1,46 @@
-import { useState, useEffect } from 'react';
 import type { IQuestion } from '../model/types';
 import styles from './QuestionCard.module.css';
 
 interface QuestionCardProps {
   question: IQuestion;
-  onAnswered: () => void; // Новый пропс: функция-колбэк
+  // Теперь колбэк принимает выбранный ответ
+  onAnswer: (answer: string) => void;
+  // Пропсы для отображения результата, который пришел с сервера
+  isAnswered: boolean;
+  userAnswer?: string;
+  correctAnswer?: string;
 }
 
-export const QuestionCard = ({ question, onAnswered }: QuestionCardProps) => {
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+export const QuestionCard = ({
+  question,
+  onAnswer,
+  isAnswered,
+  userAnswer,
+  correctAnswer,
+}: QuestionCardProps) => {
+  // Убрали весь внутренний state! Компонент стал "глупым", это хорошо.
 
-  // Сбрасываем состояние при смене вопроса
-  useEffect(() => {
-    setSelectedAnswer(null);
-  }, [question.id]);
-
-  const handleOptionClick = (option: string) => {
-    if (selectedAnswer) return;
-    setSelectedAnswer(option);
-    onAnswered(); // Вызываем колбэк, когда пользователь выбрал ответ
+  const getButtonClass = (option: string) => {
+    if (!isAnswered) return styles.optionButton;
+    if (option === correctAnswer) return styles.correct;
+    if (option === userAnswer) return styles.incorrect;
+    return styles.optionButton;
   };
 
   return (
     <div className={styles.card}>
-      <h2 className={styles.topic}>{question.topic}</h2>
-      {/* Используем pre для сохранения форматирования текста вопроса */}
-      {/* Это важно, если в вопросе есть переносы строк или особое форматирование */}
-      <pre className={styles.questionText}>{question.questionText}</pre>
-      {/* Отображаем варианты ответов */}
+      {/* ... topic, questionText ... */}
       <div className={styles.options}>
-        {question.options.map((option) => {
-          const isSelected = selectedAnswer === option;
-          const isCorrect = question.correctAnswer === option;
-
-          const classNames = [styles.optionButton];
-          if (selectedAnswer) {
-            if (isCorrect) {
-              classNames.push(styles.correct);
-            } else if (isSelected) {
-              classNames.push(styles.incorrect);
-            }
-          }
-
-          return (
-            <button
-              key={option}
-              className={classNames.join(' ')}
-              onClick={() => handleOptionClick(option)}
-              disabled={!!selectedAnswer}
-            >
-              {option}
-            </button>
-          );
-        })}
+        {question.options.map((option) => (
+          <button
+            key={option}
+            className={getButtonClass(option)}
+            onClick={() => onAnswer(option)}
+            disabled={isAnswered}
+          >
+            {option}
+          </button>
+        ))}
       </div>
     </div>
   );

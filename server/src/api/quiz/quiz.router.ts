@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { startQuiz, getNextQuestion } from './quiz.controller';
+import { startQuiz, submitAnswer } from './quiz.controller';
 
 const router = Router();
 
 router.post('/start', startQuiz);
-router.post('/:sessionId/next', getNextQuestion);
+router.post('/:sessionId/answer', submitAnswer);
 
 export default router;

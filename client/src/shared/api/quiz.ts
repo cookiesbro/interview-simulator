@@ -8,12 +8,6 @@ interface StartQuizResponse {
   question: IQuestion;
 }
 
-// Описываем тип ответа от эндпоинта /next
-interface NextQuestionResponse {
-  question: IQuestion | null; // Вопрос может быть null, если они закончились
-  message?: string;
-}
-
 // Новая функция для старта квиза
 export const startQuiz = async (): Promise<StartQuizResponse> => {
   const response = await fetch(`${API_BASE_URL}/quiz/start`, {
@@ -25,15 +19,34 @@ export const startQuiz = async (): Promise<StartQuizResponse> => {
   return response.json();
 };
 
+// Описываем тело запроса для /answer
+interface SubmitAnswerPayload {
+  questionId: string;
+  answer: string;
+}
+
+// Описываем ответ от /answer
+interface SubmitAnswerResponse {
+  isCorrect: boolean;
+  correctAnswer: string;
+  score: number;
+  nextQuestion: IQuestion | null;
+}
+
 // Новая функция для получения следующего вопроса
-export const fetchNextQuestion = async (
+export const submitAnswer = async (
   sessionId: string,
-): Promise<NextQuestionResponse> => {
-  const response = await fetch(`${API_BASE_URL}/quiz/${sessionId}/next`, {
+  payload: SubmitAnswerPayload,
+): Promise<SubmitAnswerResponse> => {
+  const response = await fetch(`${API_BASE_URL}/quiz/${sessionId}/answer`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
   });
   if (!response.ok) {
-    throw new Error('Failed to fetch next question');
+    throw new Error('Failed to submit answer');
   }
   return response.json();
 };
