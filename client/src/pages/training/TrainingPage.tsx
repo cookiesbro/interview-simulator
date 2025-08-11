@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { QuestionCard } from '@/entities/question/ui/QuestionCard';
 import { startQuiz, submitAnswer } from '@/shared/api/quiz';
 import type { IQuestion } from '@/entities/question/model/types';
+import WebApp from '@twa-dev/sdk';
 
 export const TrainingPage = () => {
   const [question, setQuestion] = useState<IQuestion | null>(null);
@@ -72,6 +73,10 @@ export const TrainingPage = () => {
 
   return (
     <div>
+      {/* Приветствуем пользователя, если информация доступна */}
+      {WebApp.initDataUnsafe.user && (
+        <p>Привет, {WebApp.initDataUnsafe.user.first_name}!</p>
+      )}
       <h1>Режим тренировки | Счет: {score}</h1>
       {question && (
         <QuestionCard

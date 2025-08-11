@@ -1,6 +1,7 @@
 import express from "express";
 import "dotenv/config"; // переменные из .env файла
 import quizRouter from "../api/quiz/quiz.router";
+import { startBot } from './bot';
 import cors from "cors"; // Импорт cors
 
 const app = express();
@@ -16,4 +17,8 @@ app.use("/api/quiz", quizRouter);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-// Создали сервер на Express, который слушает порт из переменных окружения или 5001 по умолчанию.
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+  startBot();
+});
