@@ -29,7 +29,6 @@ export const handlers = [
   }),
 ];
 
-// Мы можем экспортировать и другие обработчики, напр., для ошибок
 export const errorHandlers = [
   http.get(`${API_BASE_URL}/questions/random`, () => {
     return new HttpResponse(null, { status: 500 });

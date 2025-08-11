@@ -1,7 +1,7 @@
 import express from "express";
-import "dotenv/config"; // Загружаем переменные из .env файла
+import "dotenv/config"; // переменные из .env файла
 import quizRouter from "../api/quiz/quiz.router";
-import cors from "cors"; // Импортируем cors
+import cors from "cors"; // Импорт cors
 
 const app = express();
 const PORT = process.env.PORT || 5001;
