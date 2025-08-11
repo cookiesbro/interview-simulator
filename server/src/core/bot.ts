@@ -6,17 +6,14 @@ if (!token) {
   throw new Error('BOT_TOKEN must be provided!');
 }
 
+const webAppUrl = process.env.WEB_APP_URL || 'http://localhost:5173';
+
 const bot = new Telegraf(token);
 
-const webAppUrl = 'https://interview-simulator-lilac.vercel.app/';
-
-// Обработчик /start
 bot.start((ctx) => {
   ctx.reply(
     'Добро пожаловать в тренажер для собеседований!',
-    // Создаем инлайн-кнопку
     Markup.inlineKeyboard([
-      // Эта кнопка будет открывать наше веб-приложение
       Markup.button.webApp('🚀 Начать тренировку', `${webAppUrl}/training`)
     ])
   );
