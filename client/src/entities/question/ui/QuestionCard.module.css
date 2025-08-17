@@ -18,6 +18,7 @@
   background-color: #1a1a1a;
   padding: 1rem;
   border-radius: 4px;
+  color: #f0f0f0;
 }
 
 .options {
@@ -35,7 +36,9 @@
 .optionButton {
   width: 100%;
   text-align: left;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 .optionButton:disabled {
