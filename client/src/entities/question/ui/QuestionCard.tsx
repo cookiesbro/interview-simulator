@@ -18,8 +18,6 @@ export const QuestionCard = ({
   userAnswer,
   correctAnswer,
 }: QuestionCardProps) => {
-  // Убрали весь внутренний state! Компонент стал "глупым", это хорошо.
-
   const getButtonClass = (option: string) => {
     if (!isAnswered) return styles.optionButton;
     if (option === correctAnswer) return styles.correct;
@@ -29,7 +27,8 @@ export const QuestionCard = ({
 
   return (
     <div className={styles.card}>
-      {/* ... topic, questionText ... */}
+      <h2 className={styles.topic}>{question.topic}</h2>
+      <pre className={styles.questionText}>{question.questionText}</pre>
       <div className={styles.options}>
         {question.options.map((option) => (
           <button
