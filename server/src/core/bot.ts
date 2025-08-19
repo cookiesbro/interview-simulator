@@ -6,7 +6,7 @@ if (!token) {
   throw new Error('BOT_TOKEN must be provided!');
 }
 
-const webAppUrl = process.env.WEB_APP_URL || 'http://localhost:5173';
+const webAppUrl = process.env.WEB_APP_URL || 'https://localhost:5173';
 
 const bot = new Telegraf(token);
 
