@@ -1,24 +1,17 @@
 import express from "express";
-import "dotenv/config"; // переменные из .env файла
+import "dotenv/config";
 import quizRouter from "../api/quiz/quiz.router";
-import { startBot } from './bot';
-import cors from "cors"; // Импорт cors
+import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Middleware
-app.use(cors()); // Включили CORS, чтобы клиент мог делать запросы
-app.use(express.json()); // Для парсинга JSON-тел запросов
+// Разрешаем CORS с любого источника для локальной разработки
+app.use(cors());
+app.use(express.json());
 
-// Routes
 app.use("/api/quiz", quizRouter);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  startBot();
+  console.log(`API Server is running on port ${PORT}`);
 });

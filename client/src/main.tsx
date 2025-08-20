@@ -1,13 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
 import { TrainingPage } from './pages/training/TrainingPage';
 import './index.css';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <div>Главная страница. <a href="/training">Перейти к тренировке</a></div>,
+    element: (
+      <div>
+        <h1>Главная страница Симулятора</h1>
+        <p>
+          <Link to="/training">Перейти к тренировке</Link>
+        </p>
+      </div>
+    ),
   },
   {
     path: '/training',

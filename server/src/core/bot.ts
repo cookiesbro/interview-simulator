@@ -6,21 +6,24 @@ if (!token) {
   throw new Error('BOT_TOKEN must be provided!');
 }
 
-const webAppUrl = process.env.WEB_APP_URL || 'https://localhost:5173';
+const webAppUrl = 'https://29d25827732c.ngrok-free.app';
 
 const bot = new Telegraf(token);
 
 bot.start((ctx) => {
+  const finalWebAppUrl = `${webAppUrl}/training`;
+  console.log(`[BOT-DEBUG] Forming button with URL: ${finalWebAppUrl}`);
   ctx.reply(
-    'Добро пожаловать в тренажер для собеседований!',
+    'Добро пожаловать!',
     Markup.inlineKeyboard([
-      Markup.button.webApp('🚀 Начать тренировку', `${webAppUrl}/training`)
+      Markup.button.webApp('🚀 Начать тренировку', finalWebAppUrl)
     ])
   );
 });
 
-export const startBot = () => {
-    bot.launch(() => {
-        console.log("Telegram bot started");
-    });
-}
+bot.launch(() => {
+    console.log("Telegram bot started with Long Polling");
+});
+
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
