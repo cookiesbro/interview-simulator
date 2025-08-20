@@ -1,0 +1,29 @@
+{
+  "name": "interview-simulator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install:all": "npm install --prefix client && npm install --prefix server",
+    "dev": "concurrently \"npm:dev:client\" \"npm:dev:server:*\"",
+    "dev:client": "npm run dev --prefix client",
+    "dev:server:api": "npm run dev:api --prefix server",
+    "dev:server:bot": "npm run dev:bot --prefix server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cookiesbro/interview-simulator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/cookiesbro/interview-simulator/issues"
+  },
+  "homepage": "https://github.com/cookiesbro/interview-simulator#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
