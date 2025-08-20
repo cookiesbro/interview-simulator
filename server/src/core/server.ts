@@ -6,6 +6,9 @@ import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+app.use((req, res, next) => {
+  next();
+});
 // Разрешаем CORS с любого источника для локальной разработки
 app.use(cors());
 app.use(express.json());

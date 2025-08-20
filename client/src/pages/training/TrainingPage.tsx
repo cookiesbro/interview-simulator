@@ -22,7 +22,6 @@ export const TrainingPage = () => {
         setSessionId(sessionId);
         setQuestion(question);
       } catch (err) {
-        // Можно добавить обработку ошибки инициализации, если нужно
         console.error('Failed to initialize quiz:', err);
       }
     };
