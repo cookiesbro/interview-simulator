@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "//": "--- Установочные скрипты ---",
+    "postinstall": "npm run install:all",
     "install:all": "npm install --prefix client && npm install --prefix server",
-    "dev": "concurrently \"npm:dev:client\" \"npm:dev:server:*\"",
+    "//": "--- Скрипты для разработки ---",
+    "dev": "concurrently \"npm:dev:services\" \"npm:dev:tunnel\"",
+    "dev:services": "concurrently \"npm:dev:client\" \"npm:dev:server\"",
     "dev:client": "npm run dev --prefix client",
-    "dev:server:api": "npm run dev:api --prefix server",
-    "dev:server:bot": "npm run dev:bot --prefix server"
+    "dev:server": "wait-on https://localhost:5173 && concurrently \"npm:dev:api\" \"npm:dev:bot\"",
+    "dev:api": "npm run dev:api --prefix server",
+    "dev:bot": "npm run dev:bot --prefix server",
+    "dev:tunnel": "ngrok http https://localhost:5173"
   },
   "repository": {
     "type": "git",
@@ -24,6 +29,8 @@
   },
   "homepage": "https://github.com/cookiesbro/interview-simulator#readme",
   "devDependencies": {
-    "concurrently": "^9.2.0"
+    "concurrently": "^9.2.0",
+    "ngrok": "^5.0.0-beta.2",
+    "wait-on": "^8.0.4"
   }
 }
