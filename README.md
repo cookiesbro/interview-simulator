@@ -17,6 +17,22 @@
 
 Такое разделение является стандартной практикой для масштабируемых fullstack-приложений, позволяя независимо разрабатывать, развертывать и масштабировать клиентскую и серверную части.
 
+<table>
+  <tr>
+    <td align="center"><b>Взаимодействие с ботом</b></td>
+    <td align="center"><b>Процесс тренировки в Web App</b></td>
+  </tr>
+  <tr>
+    <td>
+      <img src="![Запись экрана 2025-10-10 (2)](https://github.com/user-attachments/assets/428bcade-0545-49ff-9138-bc8841b45baa)" alt="Демонстрация работы бота" width="300"/>
+    </td>
+    <td>
+      <!-- СЮДА НУЖНО ВСТАВИТЬ ВТОРУЮ ССЫЛКУ -->
+      <img src="![Запись экрана 2025-10-10 (1)](https://github.com/user-attachments/assets/d750fb2a-3332-48f1-b6c7-436c6b019ac0)" alt="Демонстрация работы Web App" width="300"/>
+    </td>
+  </tr>
+</table>
+
 ```mermaid
 graph TD
     User(📱 Пользователь в Telegram) --> Bot[🤖 Бот на Render];
