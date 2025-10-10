@@ -41,7 +41,6 @@ bot.start(async (ctx) => {
   try {
     const webAppUrl = await getWebAppUrl();
     const finalWebAppUrl = `${webAppUrl}/training`;
-    console.log(`[BOT-DEBUG] Forming button with URL: ${finalWebAppUrl}`);
 
     ctx.reply(
       "Добро пожаловать в тренажер для собеседований!",
