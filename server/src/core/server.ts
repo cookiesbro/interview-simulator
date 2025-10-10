@@ -3,15 +3,20 @@ import "dotenv/config";
 import quizRouter from "../api/quiz/quiz.router";
 import cors from "cors";
 
-const app = express();
-const PORT = process.env.PORT || 5001;
+export const startApi = () => {
+  const app = express();
+  // Render предоставляет порт через переменную окружения PORT
+  const PORT = process.env.PORT || 5001; 
 
-// Разрешаем CORS с любого источника для локальной разработки
-app.use(cors());
-app.use(express.json());
+  const corsOptions = {
+    origin: process.env.WEB_APP_URL,
+  };
 
-app.use("/api/quiz", quizRouter);
+  app.use(cors(corsOptions));
+  app.use(express.json());
+  app.use('/api/quiz', quizRouter);
 
-app.listen(PORT, () => {
-  console.log(`API Server is running on port ${PORT}`);
-});
+  app.listen(PORT, () => {
+    console.log(`API Server is running on port ${PORT}`);
+  });
+};
