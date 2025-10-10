@@ -1,4 +1,5 @@
 import type { IQuestion } from '../../entities/question/model/types';
+import { API_BASE_URL } from '@/shared/config';
 
 // Описываем тип ответа от эндпоинта /start
 interface StartQuizResponse {
@@ -14,7 +15,7 @@ const headers = {
 
 // Новая функция для старта квиза
 export const startQuiz = async (): Promise<StartQuizResponse> => {
-  const requestUrl = `/api/quiz/start`;
+  const requestUrl = `${API_BASE_URL}/quiz/start`;
   const response = await fetch(requestUrl, {
     method: 'POST',
     headers: { 'ngrok-skip-browser-warning': 'true' },
@@ -44,9 +45,16 @@ export const submitAnswer = async (
   sessionId: string,
   payload: SubmitAnswerPayload,
 ): Promise<SubmitAnswerResponse> => {
-  const response = await fetch(`/api/quiz/${sessionId}/answer`, {
+  // ФОРМИРУЕМ ПОЛНЫЙ URL, КАК В startQuiz
+  const requestUrl = `${API_BASE_URL}/quiz/${sessionId}/answer`;
+
+  const response = await fetch(requestUrl, {
+    // <-- Используем requestUrl
     method: 'POST',
-    headers: { ...headers, 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
+    },
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
