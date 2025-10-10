@@ -7,12 +7,6 @@ interface StartQuizResponse {
   question: IQuestion;
 }
 
-const headers = {
-  'Content-Type': 'application/json',
-  // Этот заголовок говорит ngrok пропустить страницу с предупреждением
-  'ngrok-skip-browser-warning': 'true',
-};
-
 // Новая функция для старта квиза
 export const startQuiz = async (): Promise<StartQuizResponse> => {
   const requestUrl = `${API_BASE_URL}/quiz/start`;
