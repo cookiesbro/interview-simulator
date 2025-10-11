@@ -1,0 +1,21 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem; /* rounded-2xl */
+  font-weight: 500;
+  transition: all 0.3s;
+  background-color: #4f46e5; /* bg-indigo-600 */
+  color: white;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+.button:hover {
+  background-color: #4338ca; /* hover:bg-indigo-700 */
+}
+.lg {
+  /* size="lg" */
+  padding: 1.5rem 2.5rem; /* px-10 py-6 */
+  font-size: 1.125rem; /* text-lg */
+}
