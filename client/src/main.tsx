@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { TrainingPage } from './pages/training/TrainingPage.tsx';
 import { HomePage } from './pages/training/home/HomePage.tsx';
 import './index.css';
@@ -8,7 +8,7 @@ import './index.css';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <HomePage />, // <-- ЗАМЕНЯЕМ СТАРЫЙ DIV
+    element: <HomePage />,
   },
   {
     path: '/training',
