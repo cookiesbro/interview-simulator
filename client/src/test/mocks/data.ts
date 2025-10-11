@@ -12,7 +12,7 @@ export const mockQuestion1: IQuestion = {
 export const mockQuestion2: IQuestion = {
   id: 'react-001',
   topic: 'React',
-  questionText: 'Что такое Virtual DOM?', // Уникальный текст для второго вопроса
+  questionText: 'Что такое Virtual DOM?',
   options: ['Объект, описывающий UI', 'Прямая ссылка на реальный DOM', 'Специальный HTML-тег'],
   correctAnswer: 'Объект, описывающий UI',
   explanation: '...',
