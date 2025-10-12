@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { TrainingPage } from './pages/training/TrainingPage.tsx';
 import { HomePage } from './pages/training/home/HomePage.tsx';
+import { ResultsPage } from './pages/results/ResultsPage.tsx';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     path: '/training',
     element: <TrainingPage />,
+  },
+  {
+    path: '/results',
+    element: <ResultsPage />,
   },
   // В будущем здесь можно добавить роут для /stats
 ]);

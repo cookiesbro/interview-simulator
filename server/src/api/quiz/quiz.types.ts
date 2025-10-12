@@ -4,5 +4,5 @@ export interface IQuestion {
   questionText: string;
   options: string[];
   correctAnswer: string;
-  explanation: string;
+  explanation?: string;
 }

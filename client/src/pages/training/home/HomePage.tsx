@@ -1,18 +1,39 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom'; // <-- ЗАМЕНА
-import { Button } from '@/shared/ui/Button'; // <-- НАШИ КОМПОНЕНТЫ
-import { Card, CardContent } from '@/shared/ui/Card'; // <-- НАШИ КОМПОНЕНТЫ
-import { BookOpen, Award, Menu } from 'lucide-react';
-import styles from './HomePage.module.css'; // <-- НАШИ СТИЛИ
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/shared/ui/Button';
+import { Card, CardContent } from '@/shared/ui/Card';
+import { BookOpen, Menu, Book, Landmark, Scale } from 'lucide-react';
+import { startQuiz } from '@/shared/api/quiz';
+import styles from './HomePage.module.css';
+
+// Определяем наши категории
+const categories = [
+  { id: 'language', name: 'Грузинский язык', icon: <Book /> },
+  { id: 'history', name: 'История Грузии', icon: <Landmark /> },
+  { id: 'law', name: 'Право Грузии', icon: <Scale /> },
+];
 
 export function HomePage() {
-  const userName = 'Soleil'; // В будущем можно брать из Telegram SDK
-  const stats = {
-    testsPassed: 12, // В будущем можно брать с бэкенда
-    score: 940,
-  };
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleCategorySelect = async (categoryId: string) => {
+    setIsLoading(categoryId);
+    setError(null);
+    try {
+      const { sessionId, question } = await startQuiz({ category: categoryId });
+      navigate('/training', {
+        state: { sessionId, initialQuestion: question },
+      });
+    } catch (err) {
+      console.error('Failed to start quiz session:', err); // Логируем ошибку
+      setError('Не удалось начать сессию. Попробуйте снова.');
+      setIsLoading(null);
+    }
+  };
 
   return (
     <div className={styles.pageContainer}>
@@ -35,23 +56,14 @@ export function HomePage() {
           </div>
           <h1 className={styles.logoText}>Симулятор</h1>
         </div>
-
         <nav className={styles.navDesktop}>
           <Link to="/" className={styles.navLink}>
             Главная
           </Link>
-          <Link to="/training" className={styles.navLink}>
-            Тренировка
-          </Link>
-          <Link to="/stats" className={styles.navLink}>
-            Статистика
-          </Link>
         </nav>
-
         <div className={styles.menuButton}>
           <Menu className="w-6 h-6" onClick={() => setMenuOpen(!menuOpen)} />
         </div>
-
         {menuOpen && (
           <motion.div
             className={styles.navMobile}
@@ -60,12 +72,6 @@ export function HomePage() {
           >
             <Link to="/" onClick={() => setMenuOpen(false)}>
               Главная
-            </Link>
-            <Link to="/training" onClick={() => setMenuOpen(false)}>
-              Тренировка
-            </Link>
-            <Link to="/stats" onClick={() => setMenuOpen(false)}>
-              Статистика
             </Link>
           </motion.div>
         )}
@@ -77,47 +83,40 @@ export function HomePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
-        <h2 className={styles.title}>Добро пожаловать, {userName}!</h2>
+        <h2 className={styles.title}>Выберите тему для тренировки</h2>
         <p className={styles.subtitle}>
-          Продолжай тренировки и стань экспертом 🇬🇪
+          Каждый тест состоит из 10 случайных вопросов.
         </p>
 
-        <div className={styles.statsContainer}>
-          <Card className={styles.statCard}>
-            <CardContent>
-              {/* Добавляем класс для первой иконки */}
-              <Award className={`${styles.icon} ${styles.iconIndigo}`} />
-              <p className={styles.statLabel}>Пройдено тестов</p>
-              <span className={styles.statValue}>{stats.testsPassed}</span>
-            </CardContent>
-          </Card>
-          <Card className={styles.statCard}>
-            <CardContent>
-              {/* Добавляем класс для второй иконки */}
-              <Award className={`${styles.icon} ${styles.iconYellow}`} />
-              <p className={styles.statLabel}>Текущий балл</p>
-              <span className={styles.statValue}>{stats.score}</span>
-            </CardContent>
-          </Card>
+        {/* --- СЕКЦИЯ ВЫБОРА КАТЕГОРИИ --- */}
+        <div className={styles.cardGrid}>
+          {categories.map((category, index) => (
+            <motion.div
+              key={category.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Card className={styles.categoryCard}>
+                <CardContent>
+                  <div className={styles.iconWrapper}>{category.icon}</div>
+                  <h2 className={styles.categoryName}>{category.name}</h2>
+                  <Button
+                    onClick={() => handleCategorySelect(category.id)}
+                    disabled={isLoading === category.id}
+                    className={styles.startButton}
+                  >
+                    {isLoading === category.id ? 'Загрузка...' : 'Начать'}
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
-
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
-          <Link to="/training">
-            <Button size="lg">Перейти к тренировке</Button>
-          </Link>
-        </motion.div>
+        {error && <p className={styles.error}>{error}</p>}
       </motion.main>
 
-      <motion.div
-        className={`${styles.decorator} ${styles.decorator1}`}
-        animate={{ y: [0, -10, 0] }}
-        transition={{ repeat: Infinity, duration: 6 }}
-      />
-      <motion.div
-        className={`${styles.decorator} ${styles.decorator2}`}
-        animate={{ y: [0, 10, 0] }}
-        transition={{ repeat: Infinity, duration: 5 }}
-      />
+      {/* ... декоративные эффекты ... */}
     </div>
   );
 }

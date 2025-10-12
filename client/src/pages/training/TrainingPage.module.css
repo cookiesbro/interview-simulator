@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background-color: #111827; /* Темный фон */
+  overflow: hidden; /* Для красивой анимации */
+}
+.header {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  color: #d1d5db;
+}
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.score {
+  font-size: 1.125rem;
+  font-weight: 500;
+  background-color: #1f2937;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+}

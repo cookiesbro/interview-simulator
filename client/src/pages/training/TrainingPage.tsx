@@ -1,55 +1,51 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { QuestionCard } from '@/entities/question/ui/QuestionCard';
-import { startQuiz, submitAnswer } from '@/shared/api/quiz';
+import { submitAnswer } from '@/shared/api/quiz';
 import type { IQuestion } from '@/entities/question/model/types';
-import WebApp from '@twa-dev/sdk';
+import styles from './TrainingPage.module.css';
 
-export const TrainingPage = () => {
-  const [question, setQuestion] = useState<IQuestion | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+export function TrainingPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Получаем начальные данные, переданные от HomePage
+  const [sessionId] = useState<string | null>(location.state?.sessionId);
+  const [question, setQuestion] = useState<IQuestion | null>(
+    location.state?.initialQuestion,
+  );
   const [score, setScore] = useState(0);
-  const [isQuizFinished, setIsQuizFinished] = useState(false);
+  const [questionNumber, setQuestionNumber] = useState(1);
 
   const [answerResult, setAnswerResult] = useState<{
     userAnswer: string;
     correctAnswer: string;
   } | null>(null);
 
-  useEffect(() => {
-    const initQuiz = async () => {
-      try {
-        const { sessionId, question } = await startQuiz();
-        setSessionId(sessionId);
-        setQuestion(question);
-      } catch (err) {
-        console.error('Failed to initialize quiz:', err);
-      }
-    };
-    initQuiz();
-  }, []);
-
   const handleAnswer = async (answer: string) => {
-    if (!sessionId || !question || answerResult) return; // Блокируем повторные нажатия, пока виден результат
+    if (!sessionId || !question || answerResult) return;
 
     try {
-      const {
-        correctAnswer,
-        score: newScore,
-        nextQuestion,
-      } = await submitAnswer(sessionId, {
+      const result = await submitAnswer(sessionId, {
         questionId: question.id,
         answer,
       });
 
-      setScore(newScore);
-      setAnswerResult({ userAnswer: answer, correctAnswer });
+      setScore(result.score);
+      setAnswerResult({
+        userAnswer: answer,
+        correctAnswer: result.correctAnswer,
+      });
 
+      // Плавный переход к следующему вопросу или результатам
       setTimeout(() => {
-        setAnswerResult(null);
-        if (nextQuestion) {
-          setQuestion(nextQuestion);
+        if (result.quizFinished) {
+          navigate('/results', { state: result });
         } else {
-          setIsQuizFinished(true);
+          setQuestion(result.nextQuestion);
+          setQuestionNumber((prev) => prev + 1);
+          setAnswerResult(null);
         }
       }, 2000);
     } catch (err) {
@@ -57,35 +53,38 @@ export const TrainingPage = () => {
     }
   };
 
-  if (!question && !isQuizFinished) {
-    return <div>Загрузка сессии...</div>;
-  }
-
-  if (isQuizFinished) {
+  if (!sessionId || !question) {
     return (
-      <div>
-        <h1>Квиз завершен!</h1>
-        <h2>Ваш итоговый счет: {score}</h2>
+      <div className={styles.container}>
+        <p>Ошибка: сессия не была начата.</p>
+        <Link to="/">Вернуться к выбору категории</Link>
       </div>
     );
   }
 
   return (
-    <div>
-      {/* Приветствуем пользователя, если информация доступна */}
-      {WebApp.initDataUnsafe.user && (
-        <p>Привет, {WebApp.initDataUnsafe.user.first_name}!</p>
-      )}
-      <h1>Режим тренировки | Счет: {score}</h1>
-      {question && (
-        <QuestionCard
-          question={question}
-          onAnswer={handleAnswer}
-          isAnswered={!!answerResult}
-          userAnswer={answerResult?.userAnswer}
-          correctAnswer={answerResult?.correctAnswer}
-        />
-      )}
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Вопрос {questionNumber} / 10</h1>
+        <div className={styles.score}>Счет: {score}</div>
+      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={question.id}
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -100 }}
+          transition={{ duration: 0.3 }}
+        >
+          <QuestionCard
+            question={question}
+            onAnswer={handleAnswer}
+            isAnswered={!!answerResult}
+            userAnswer={answerResult?.userAnswer}
+            correctAnswer={answerResult?.correctAnswer}
+          />
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
-};
+}

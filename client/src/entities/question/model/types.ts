@@ -3,6 +3,10 @@ export interface IQuestion {
   topic: string;
   questionText: string;
   options: string[];
-  correctAnswer: string; // Пока просто строка, потом может быть индекс
+  correctAnswer: string;
   explanation: string;
+}
+
+export interface IncorrectAnswer extends IQuestion {
+  userAnswer: string;
 }

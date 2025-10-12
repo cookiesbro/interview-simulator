@@ -1,39 +1,55 @@
 import type { Request, Response } from "express";
-import { randomUUID } from "crypto"; // Встроенный в Node.js генератор UUID
-import questions from "../../data/questions.json";
+import { randomUUID } from "crypto";
+import languageQuestions from "../../data/language_questions.json";
+import historyQuestions from "../../data/history_questions.json";
+import lawQuestions from "../../data/law_questions.json";
 import type { IQuestion } from "./quiz.types";
 import { createSession, getSession, updateSession } from "./quiz.store";
 
-const allQuestions: IQuestion[] = questions;
-
-// POST /api/quiz/start
-export const startQuiz = (req: Request, res: Response) => {
-  const sessionId = randomUUID();
-  const session = createSession(sessionId);
-
-  const availableQuestions = allQuestions.filter(
-    (q) => !session.seenQuestionIds.has(q.id)
-  );
-
-  if (availableQuestions.length === 0) {
-    return res.status(404).json({ message: "Нет доступных вопросов" });
-  }
-
-  const randomQuestion =
-    availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
-
-  // Добавляем ID вопроса в "увиденные"
-  session.seenQuestionIds.add(randomQuestion.id);
-  updateSession(sessionId, { seenQuestionIds: session.seenQuestionIds });
-
-  res.status(201).json({ sessionId, question: randomQuestion });
+const questionCategories: Record<string, IQuestion[]> = {
+  language: languageQuestions,
+  history: historyQuestions,
+  law: lawQuestions,
 };
 
-// НОВЫЙ ЭНДПОИНТ: POST /api/quiz/:sessionId/answer
+export const startQuiz = (req: Request, res: Response) => {
+  const { category } = req.body;
+
+  if (
+    !category ||
+    typeof category !== "string" ||
+    !questionCategories[category]
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Неверная или отсутствующая категория" });
+  }
+
+  const sessionId = randomUUID();
+  const session = createSession(sessionId);
+  const allQuestionsInCategory = questionCategories[category];
+
+  const shuffled = [...allQuestionsInCategory].sort(() => 0.5 - Math.random());
+  const selectedQuestions = shuffled.slice(0, 10);
+
+  if (selectedQuestions.length === 0) {
+    return res.status(404).json({ message: "В этой категории нет вопросов" });
+  }
+
+  // Обновляем сессию ОДИН РАЗ со всеми данными
+  updateSession(sessionId, {
+    // `session` здесь не нужен, так как createSession уже содержит базовые поля
+    questions: selectedQuestions,
+    currentQuestionIndex: 0,
+  });
+
+  res.status(201).json({ sessionId, question: selectedQuestions[0] });
+};
+
 export const submitAnswer = (req: Request, res: Response) => {
   // 1. Валидация
   const { sessionId } = req.params;
-  const { questionId, answer } = req.body; // Получаем ID вопроса и ответ от клиента
+  const { questionId, answer } = req.body;
 
   if (!questionId || !answer) {
     return res.status(400).json({ message: "questionId и answer обязательны" });
@@ -45,39 +61,60 @@ export const submitAnswer = (req: Request, res: Response) => {
   }
 
   // 2. Находим вопрос, на который отвечали
-  const answeredQuestion = allQuestions.find((q) => q.id === questionId);
+  const answeredQuestion = session.questions.find((q) => q.id === questionId);
   if (!answeredQuestion) {
-    return res.status(404).json({ message: "Вопрос не найден" });
+    return res
+      .status(404)
+      .json({ message: "Вопрос не найден в текущей сессии" });
   }
 
-  // 3. Проверяем правильность ответа
+  // 3. Проверяем правильность ответа и обновляем счет
   const isCorrect = answeredQuestion.correctAnswer === answer;
   if (isCorrect) {
-    session.score += 1; // Увеличиваем счет
+    session.score += 1;
   }
 
-  // 4. Находим следующий уникальный вопрос
-  const availableQuestions = allQuestions.filter(
-    (q) => !session.seenQuestionIds.has(q.id)
-  );
-  const nextQuestion =
-    availableQuestions.length > 0
-      ? availableQuestions[
-          Math.floor(Math.random() * availableQuestions.length)
-        ]
-      : null;
+  // 4. Сохраняем ответ пользователя
+  session.answers.push({ questionId, userAnswer: answer, isCorrect });
 
-  if (nextQuestion) {
-    session.seenQuestionIds.add(nextQuestion.id);
+  // 5. Увеличиваем индекс
+  session.currentQuestionIndex += 1;
+
+  // 6. Проверяем, закончился ли квиз
+  if (session.currentQuestionIndex >= session.questions.length) {
+    const finalScore = session.score;
+    const passed = finalScore >= 7;
+
+    const incorrectAnswers = session.answers
+      .filter((a) => !a.isCorrect)
+      .map((a) => {
+        const question = session.questions.find((q) => q.id === a.questionId);
+        return {
+          ...question,
+          userAnswer: a.userAnswer,
+        };
+      });
+
+    updateSession(sessionId, session);
+
+    return res.json({
+      quizFinished: true,
+      passed,
+      finalScore,
+      incorrectAnswers: passed ? [] : incorrectAnswers,
+    });
   }
+
+  // 7. Если квиз не окончен
+  const nextQuestion = session.questions[session.currentQuestionIndex];
 
   updateSession(sessionId, session);
 
-  // 5. Отправляем развернутый ответ клиенту
   res.json({
     isCorrect,
     correctAnswer: answeredQuestion.correctAnswer,
     score: session.score,
     nextQuestion: nextQuestion,
+    quizFinished: false,
   });
 };
