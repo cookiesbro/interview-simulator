@@ -1,4 +1,7 @@
-import type { IQuestion } from '../../entities/question/model/types';
+import type {
+  IQuestion,
+  IncorrectAnswer,
+} from '../../entities/question/model/types';
 import { API_BASE_URL } from '@/shared/config';
 
 // Описываем тип ответа от эндпоинта /start
@@ -7,12 +10,22 @@ interface StartQuizResponse {
   question: IQuestion;
 }
 
+interface StartQuizPayload {
+  category: string;
+}
 // Новая функция для старта квиза
-export const startQuiz = async (): Promise<StartQuizResponse> => {
-  const requestUrl = `${API_BASE_URL}/quiz/start`;
+export const startQuiz = async (
+  payload: StartQuizPayload,
+): Promise<StartQuizResponse> => {
+  const requestUrl = `/api/quiz/start`;
   const response = await fetch(requestUrl, {
     method: 'POST',
-    headers: { 'ngrok-skip-browser-warning': 'true' },
+    headers: {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
+    },
+    // Отправляем категорию в теле запроса
+    body: JSON.stringify(payload),
   });
   if (!response.ok) {
     throw new Error('Failed to start quiz');
@@ -32,6 +45,10 @@ interface SubmitAnswerResponse {
   correctAnswer: string;
   score: number;
   nextQuestion: IQuestion | null;
+  quizFinished?: boolean;
+  passed?: boolean;
+  finalScore?: number;
+  incorrectAnswers?: IncorrectAnswer[];
 }
 
 // Новая функция для получения следующего вопроса

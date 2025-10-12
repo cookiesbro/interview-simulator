@@ -1,0 +1,57 @@
+.container {
+  display: flex;
+  align-items: flex-start; /* Начинаем сверху */
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: #f9fafb;
+}
+.resultsCard {
+  width: 100%;
+  max-width: 48rem; /* Увеличили ширину */
+  text-align: center;
+}
+.icon {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+.success {
+  color: #10b981;
+}
+.failure {
+  color: #ef4444;
+}
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.score {
+  font-size: 1.125rem;
+  color: #4b5563;
+  margin-bottom: 2rem;
+}
+.errorsSection {
+  margin: 2rem 0;
+  text-align: left;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 2rem;
+}
+.errorsTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.errorsGrid {
+  display: grid;
+  gap: 1.5rem;
+}
+.link {
+  text-decoration: none;
+  margin-top: 2rem;
+  display: inline-block;
+}

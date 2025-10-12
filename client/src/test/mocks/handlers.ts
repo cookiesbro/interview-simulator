@@ -8,6 +8,15 @@ export const handlers = [
       question: mockQuestion1, // Используем mockQuestion1
     });
   }),
+  http.post(`/api/quiz/mock-session-id/answer`, () => {
+    return HttpResponse.json({
+      isCorrect: false, // неважно для этого теста
+      correctAnswer: mockQuestion1.correctAnswer,
+      score: 0,
+      nextQuestion: mockQuestion2, // <-- Важно, чтобы тест прошел
+      quizFinished: false,
+    });
+  }),
   http.post(`/api/quiz/mock-session-id/next`, () => {
     return HttpResponse.json({
       question: mockQuestion2, // Используем mockQuestion2
