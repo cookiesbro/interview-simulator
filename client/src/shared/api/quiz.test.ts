@@ -10,26 +10,27 @@ describe('quiz API', () => {
   // ОСТАВЛЯЕМ ТОЛЬКО ТЕСТЫ ДЛЯ НОВОЙ ЛОГИКИ СЕССИЙ
 
   it('should start a new quiz session successfully', async () => {
-  server.use(...handlers);
+    server.use(...handlers);
 
-  // Act: вызываем функцию старта квиза с моковой категорией
-  const response = await startQuiz({ category: 'language' }); // <-- ИСПРАВЛЕНИЕ
+    // Act: вызываем функцию старта квиза с моковой категорией
+    const response = await startQuiz({ category: 'language' }); // <-- ИСПРАВЛЕНИЕ
 
-  // Assert
-  expect(response.sessionId).toBe('mock-session-id');
-  expect(response.question).toEqual(mockQuestion1);
-});
-
-it('should submit an answer and get the next question', async () => {
-  server.use(...handlers); // Убедись, что в handlers есть мок для этого запроса
-
-  // Act
-  const response = await submitAnswer('mock-session-id', {
-    questionId: mockQuestion1.id,
-    answer: mockQuestion1.options[0],
+    // Assert
+    expect(response.sessionId).toBe('mock-session-id');
+    expect(response.question).toEqual(mockQuestion1);
   });
 
-  // Assert
-  expect(response.nextQuestion).toEqual(mockQuestion2);
-  expect(response.isCorrect).toBeDefined(); // Проверяем, что поле isCorrect существует
+  it('should submit an answer and get the next question', async () => {
+    server.use(...handlers); // Убедись, что в handlers есть мок для этого запроса
+
+    // Act
+    const response = await submitAnswer('mock-session-id', {
+      questionId: mockQuestion1.id,
+      answer: mockQuestion1.options[0],
+    });
+
+    // Assert
+    expect(response.nextQuestion).toEqual(mockQuestion2);
+    expect(response.isCorrect).toBeDefined(); // Проверяем, что поле isCorrect существует
+  });
 });
