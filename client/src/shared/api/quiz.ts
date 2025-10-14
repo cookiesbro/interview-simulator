@@ -17,7 +17,7 @@ interface StartQuizPayload {
 export const startQuiz = async (
   payload: StartQuizPayload,
 ): Promise<StartQuizResponse> => {
-  const requestUrl = `/api/quiz/start`;
+  const requestUrl = `${API_BASE_URL}/quiz/start`;
   const response = await fetch(requestUrl, {
     method: 'POST',
     headers: {
