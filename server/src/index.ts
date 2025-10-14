@@ -7,9 +7,10 @@ import { startBot } from "./core/bot";
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-const corsOptions = {
+const whitelist = ["https://interview-simulator-ten.vercel.app"];
+const corsOptions: cors.CorsOptions = {
   origin: function (origin, callback) {
-    if (!origin || origin.endsWith(".vercel.app")) {
+    if (!origin || whitelist.some((url) => origin.endsWith(url))) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
