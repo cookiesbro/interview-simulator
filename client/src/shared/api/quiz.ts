@@ -60,7 +60,6 @@ export const submitAnswer = async (
   const requestUrl = `${API_BASE_URL}/quiz/${sessionId}/answer`;
 
   const response = await fetch(requestUrl, {
-    // <-- Используем requestUrl
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

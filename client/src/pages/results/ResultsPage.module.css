@@ -1,6 +1,6 @@
 .container {
   display: flex;
-  align-items: flex-start; /* Начинаем сверху */
+  align-items: flex-start;
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
@@ -8,7 +8,7 @@
 }
 .resultsCard {
   width: 100%;
-  max-width: 48rem; /* Увеличили ширину */
+  max-width: 48rem; 
   text-align: center;
 }
 .icon {
@@ -19,7 +19,7 @@
   margin-right: auto;
 }
 .success {
-  color: #10b981;
+  color: #1e795b;
 }
 .failure {
   color: #ef4444;
