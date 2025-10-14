@@ -1,7 +1,7 @@
 import type {
   IQuestion,
   IncorrectAnswer,
-} from '../../entities/question/model/types';
+} from '@/entities/question/model/types';
 import { API_BASE_URL } from '@/shared/config';
 
 // Описываем тип ответа от эндпоинта /start
