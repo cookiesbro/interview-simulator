@@ -19,10 +19,14 @@ export const QuestionCard = ({
   correctAnswer,
 }: QuestionCardProps) => {
   const getButtonClass = (option: string) => {
-    if (!isAnswered) return styles.optionButton;
-    if (option === correctAnswer) return styles.correct;
-    if (option === userAnswer) return styles.incorrect;
-    return styles.optionButton;
+    const baseClass = styles.optionButton;
+
+    if (!isAnswered) return baseClass;
+
+    if (option === correctAnswer) return `${baseClass} ${styles.correct}`;
+    if (option === userAnswer) return `${baseClass} ${styles.incorrect}`;
+
+    return baseClass;
   };
 
   return (

@@ -68,6 +68,14 @@ export function TrainingPage() {
         <h1 className={styles.title}>Вопрос {questionNumber} / 10</h1>
         <div className={styles.score}>Счет: {score}</div>
       </div>
+      <div className={styles.progressBarContainer}>
+        <motion.div
+          className={styles.progressBar}
+          initial={{ width: 0 }}
+          animate={{ width: `${(questionNumber / 10) * 100}%` }}
+          transition={{ duration: 0.5 }}
+        />
+      </div>
       <AnimatePresence mode="wait">
         <motion.div
           key={question.id}
